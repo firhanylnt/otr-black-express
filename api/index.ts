@@ -1,7 +1,4 @@
-// Vercel serverless: run "npm run build" first so dist/ exists
+// Vercel serverless: run "npm run build" so dist/ exists. No db/init — DB uses Prisma.
 import app from '../dist/app.js'
-import { getDb } from '../dist/db/init.js'
-
-getDb()
 
 export default app
