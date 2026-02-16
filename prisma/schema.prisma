@@ -1,0 +1,363 @@
+// OTR Backend - Supabase (PostgreSQL)
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  guest_creator
+  resident
+  admin
+}
+
+enum ContentType {
+  track
+  album
+  mixtape
+  playlist
+  radio_show
+  video
+}
+
+enum ContentCategory {
+  picks
+  residents
+  guests
+  featured
+  program
+}
+
+enum ContentStatus {
+  draft
+  pending
+  approved
+  rejected
+  published
+}
+
+enum EventStatus {
+  upcoming
+  ongoing
+  past
+  cancelled
+}
+
+enum ProductCategory {
+  apparel
+  vinyl
+  prints
+  accessories
+  other
+}
+
+enum HighlightPosition {
+  main
+  side
+}
+
+enum SubscriberStatus {
+  active
+  unsubscribed
+}
+
+enum SettingType {
+  string
+  number
+  boolean
+  json
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  username     String    @unique
+  password     String
+  displayName  String?   @map("display_name")
+  bio          String?
+  avatarUrl    String?   @map("avatar_url")
+  role         UserRole  @default(user)
+  isVerified   Int       @default(0) @map("is_verified")
+  isSuspended  Boolean   @default(false) @map("is_suspended")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  contentAsCreator Content[]     @relation("ContentCreator")
+  contentReviewed  Content[]     @relation("ContentReviewer")
+  likes            Like[]
+  playHistory      PlayHistory[]
+
+  @@map("users")
+}
+
+model Content {
+  id              Int           @id @default(autoincrement())
+  title           String
+  slug            String        @unique
+  description     String?
+  type            ContentType
+  category        ContentCategory
+  coverUrl        String?       @map("cover_url")
+  audioUrl        String?       @map("audio_url")
+  videoUrl        String?       @map("video_url")
+  youtubeEmbed    String?       @map("youtube_embed")
+  duration        Int?
+  releaseDate     String?       @map("release_date")
+  scheduledAt     String?       @map("scheduled_at")
+  status          ContentStatus @default(draft)
+  rejectionReason String?       @map("rejection_reason")
+  creatorId       Int?          @map("creator_id")
+  reviewedBy      Int?          @map("reviewed_by")
+  reviewedAt      DateTime?     @map("reviewed_at")
+  plays           Int           @default(0)
+  likes          Int           @default(0)
+  tags           String?
+  genres         String?
+  isHighlighted  Int           @default(0) @map("is_highlighted")
+  isFeaturedHome Int           @default(0) @map("is_featured_home")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  creator   User?    @relation("ContentCreator", fields: [creatorId], references: [id])
+  reviewer  User?    @relation("ContentReviewer", fields: [reviewedBy], references: [id])
+  tracks    Track[]
+  likesUser Like[]
+  playHistory PlayHistory[]
+
+  @@index([status])
+  @@index([creatorId])
+  @@index([slug])
+  @@map("content")
+}
+
+model Track {
+  id          Int     @id @default(autoincrement())
+  contentId   Int     @map("content_id")
+  title       String
+  trackNumber Int     @map("track_number")
+  duration    Int?
+  audioUrl    String? @map("audio_url")
+
+  content Content @relation(fields: [contentId], references: [id])
+
+  @@map("tracks")
+}
+
+model Event {
+  id          Int         @id @default(autoincrement())
+  title       String
+  slug        String      @unique
+  description String?
+  coverUrl    String?     @map("cover_url")
+  bannerUrl   String?     @map("banner_url")
+  venue       String?
+  address     String?
+  city        String?
+  country     String?
+  startDate   String      @map("start_date")
+  endDate     String?     @map("end_date")
+  ticketUrl   String?     @map("ticket_url")
+  price       String?
+  isFree      Int         @default(0) @map("is_free")
+  status      EventStatus @default(upcoming)
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([startDate, endDate])
+  @@map("events")
+}
+
+model Product {
+  id          Int             @id @default(autoincrement())
+  name        String
+  slug        String          @unique
+  description String?
+  price       Float
+  currency    String          @default("USD")
+  imageUrl    String?         @map("image_url")
+  images      String?
+  category    ProductCategory @default(other)
+  stock       Int             @default(0)
+  isAvailable Int             @default(1) @map("is_available")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  variants ProductVariant[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id            Int     @id @default(autoincrement())
+  productId     Int     @map("product_id")
+  name          String
+  value         String
+  priceModifier Float   @default(0) @map("price_modifier")
+  stock         Int     @default(0)
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("product_variants")
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  contentId Int      @map("content_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  content Content @relation(fields: [contentId], references: [id])
+
+  @@unique([userId, contentId])
+  @@map("likes")
+}
+
+model ProgramSchedule {
+  id          Int     @id @default(autoincrement())
+  contentId   Int?    @map("content_id")
+  dayOfWeek   Int?    @map("day_of_week")
+  startTime   String? @map("start_time")
+  endTime     String? @map("end_time")
+  isRecurring Int     @default(0) @map("is_recurring")
+  specificDate String? @map("specific_date")
+
+  @@map("program_schedule")
+}
+
+model AboutSection {
+  id       Int     @id @default(autoincrement())
+  title    String
+  content  String?
+  imageUrl String? @map("image_url")
+  order    Int     @default(0) @map("order")
+
+  @@map("about_sections")
+}
+
+model Setting {
+  id    Int        @id @default(autoincrement())
+  key   String     @unique
+  value String?
+  type  SettingType @default(string)
+
+  @@map("settings")
+}
+
+model Genre {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  isActive  Int      @default(1) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("genres")
+}
+
+model Mood {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  isActive  Int      @default(1) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("moods")
+}
+
+model Subscriber {
+  id        Int              @id @default(autoincrement())
+  email     String           @unique
+  name      String?
+  source    String?
+  status    SubscriberStatus @default(active)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@map("subscribers")
+}
+
+model Program {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  description String?
+  imageUrl    String?  @map("image_url")
+  isActive    Int      @default(1) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  episodes ProgramEpisode[]
+
+  @@map("program")
+}
+
+model ProgramEpisode {
+  id          Int      @id @default(autoincrement())
+  programId   Int      @map("program_id")
+  title       String
+  slug        String
+  description String?
+  audioUrl    String?  @map("audio_url")
+  duration    Int?
+  publishedAt String?  @map("published_at")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  program Program @relation(fields: [programId], references: [id])
+
+  @@unique([programId, slug])
+  @@map("program_episodes")
+}
+
+model Pick {
+  id           Int      @id @default(autoincrement())
+  contentType  String   @map("content_type")
+  contentId    Int      @map("content_id")
+  curatorNote  String?   @map("curator_note")
+  sortOrder    Int      @default(0) @map("sort_order")
+  isActive     Int      @default(1) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("picks")
+}
+
+model Highlight {
+  id         Int               @id @default(autoincrement())
+  position   HighlightPosition
+  sideIndex  Int?              @map("side_index")
+  title      String
+  artist     String?
+  image      String?
+  customImage String?          @map("custom_image")
+  tag        String?
+  type       String?
+  link       String?
+  active     Int               @default(1)
+  sortOrder  Int               @default(0) @map("sort_order")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  @@map("highlights")
+}
+
+model PlayHistory {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  contentId       Int      @map("content_id")
+  duration        Int?
+  position        Int      @default(0)
+  listenedDuration Int     @default(0) @map("listened_duration")
+  playedAt       DateTime @default(now()) @map("played_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  content Content @relation(fields: [contentId], references: [id])
+
+  @@index([userId])
+  @@index([contentId])
+  @@map("play_history")
+}
