@@ -27,15 +27,30 @@ export const songController = {
   },
 
   async listAdmin(req: Request, res: Response): Promise<void> {
-    const { status, genre, search, page, limit } = req.query
-    const result = await contentService.listSongsAdmin({
-      status: status as string | undefined,
-      genre: genre as string | undefined,
-      search: search as string | undefined,
-      page: page ? Number(page) : undefined,
-      limit: limit ? Number(limit) : undefined,
-    })
-    res.json({ success: true, ...result })
+    try {
+      const { status, genre, search, page, limit } = req.query
+      const str = (v: unknown) => (typeof v === 'string' && v && v !== 'undefined' && v !== 'null' ? v : undefined)
+      const result = await contentService.listSongsAdmin({
+        status: str(status),
+        genre: str(genre),
+        search: str(search),
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+      })
+      res.json({
+        success: true,
+        data: Array.isArray(result?.data) ? result.data : [],
+        meta: result?.meta ?? { total: 0, page: 1, limit: 20, totalPages: 0 },
+      })
+    } catch (err) {
+      console.error('listAdmin error:', err)
+      res.status(500).json({
+        success: false,
+        message: (err as Error).message,
+        data: [],
+        meta: { total: 0, page: 1, limit: 20, totalPages: 0 },
+      })
+    }
   },
 
   async listPending(req: Request, res: Response): Promise<void> {
@@ -78,7 +93,7 @@ export const songController = {
   },
 
   async create(req: Request, res: Response): Promise<void> {
-    const { userId } = (req as Request & { user: JwtPayload }).user
+    const { userId, role } = (req as Request & { user: JwtPayload }).user
     const b = req.body as Record<string, unknown>
     const { cover, audio } = getFiles(req)
     if ((cover || audio) && !isR2Configured()) {
@@ -96,6 +111,25 @@ export const songController = {
       return
     }
     const slug = (b.slug as string) || String(b.title).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    const isAdmin = role === 'admin'
+    const status =
+      isAdmin
+        ? ((b.status as 'pending' | 'published') === 'published' ? 'published' : 'pending')
+        : 'pending'
+    const tagsRaw = b.tags ?? b.moods
+    const tagsValue =
+      tagsRaw == null
+        ? null
+        : Array.isArray(tagsRaw)
+          ? JSON.stringify(tagsRaw)
+          : String(tagsRaw)
+    const genresRaw = b.genres ?? b.genreIds
+    const genresValue =
+      genresRaw == null
+        ? null
+        : Array.isArray(genresRaw)
+          ? JSON.stringify(genresRaw)
+          : String(genresRaw)
     const song = await contentService.create({
       title: String(b.title ?? ''),
       slug,
@@ -108,10 +142,10 @@ export const songController = {
       youtubeEmbed: (b.youtubeEmbed as string) ?? null,
       duration: b.duration != null ? Number(b.duration) : null,
       releaseDate: (b.releaseDate as string) ?? null,
-      status: (b.status as 'draft' | 'pending' | 'published') ?? 'pending',
+      status,
       creatorId: userId,
-      tags: b.tags != null ? (Array.isArray(b.tags) ? JSON.stringify(b.tags) : String(b.tags)) : null,
-      genres: b.genres != null ? (Array.isArray(b.genres) ? JSON.stringify(b.genres) : String(b.genres)) : null,
+      tags: tagsValue,
+      genres: genresValue,
     })
     res.status(201).json({ success: true, data: song })
   },
@@ -138,15 +172,20 @@ export const songController = {
       return
     }
     const updates: Record<string, unknown> = {}
+    const tagsInput = b.tags ?? b.moods
+    const genresInput = b.genres ?? b.genreIds
     const map: Record<string, string> = {
       title: 'title', description: 'description', coverUrl: 'coverUrl', audioUrl: 'audioUrl',
       videoUrl: 'videoUrl', youtubeEmbed: 'youtubeEmbed', duration: 'duration', releaseDate: 'releaseDate',
       status: 'status', tags: 'tags', genres: 'genres',
     }
     for (const [k, col] of Object.entries(map)) {
-      if (b[k] !== undefined) {
-        if (k === 'tags' || k === 'genres') (updates as Record<string, unknown>)[col] = Array.isArray(b[k]) ? JSON.stringify(b[k]) : b[k]
-        else (updates as Record<string, unknown>)[col] = b[k]
+      if (k === 'tags' && tagsInput !== undefined) {
+        (updates as Record<string, unknown>)[col] = Array.isArray(tagsInput) ? JSON.stringify(tagsInput) : tagsInput
+      } else if (k === 'genres' && genresInput !== undefined) {
+        (updates as Record<string, unknown>)[col] = Array.isArray(genresInput) ? JSON.stringify(genresInput) : genresInput
+      } else if (b[k] !== undefined) {
+        (updates as Record<string, unknown>)[col] = b[k]
       }
     }
     const song = await contentService.update(id, updates as Parameters<typeof contentService.update>[1])

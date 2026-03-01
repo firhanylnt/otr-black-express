@@ -12,7 +12,12 @@ export const historyService = {
   async logPlay(userId: number, songId: number, duration?: number, position?: number) {
     await prisma.$transaction([
       prisma.playHistory.create({
-        data: { userId, contentId: songId, duration: duration ?? 0, position: position ?? 0 },
+        data: {
+          user: { connect: { id: userId } },
+          content: { connect: { id: songId } },
+          duration: duration ?? 0,
+          position: position ?? 0,
+        },
       }),
       prisma.content.update({
         where: { id: songId },
@@ -44,10 +49,12 @@ export const historyService = {
   },
 
   async updateProgress(userId: number, songId: number, currentPosition: number, duration?: number, listenedDuration?: number, incrementPlay?: boolean) {
+    const contentId = Number(songId)
+    if (!Number.isFinite(contentId) || contentId < 1) return
     await prisma.playHistory.create({
       data: {
-        userId,
-        contentId: songId,
+        user: { connect: { id: userId } },
+        content: { connect: { id: contentId } },
         position: currentPosition,
         listenedDuration: listenedDuration ?? 0,
         duration: duration ?? 0,
@@ -55,7 +62,7 @@ export const historyService = {
     })
     if (incrementPlay) {
       await prisma.content.update({
-        where: { id: songId },
+        where: { id: contentId },
         data: { plays: { increment: 1 } },
       })
     }
@@ -63,10 +70,12 @@ export const historyService = {
 
   async syncHistory(userId: number, history: { songId: string; position: number; duration?: number; listenedDuration?: number }[]) {
     for (const h of history) {
+      const contentId = Number(h.songId)
+      if (!Number.isFinite(contentId) || contentId < 1) continue
       await prisma.playHistory.create({
         data: {
-          userId,
-          contentId: Number(h.songId),
+          user: { connect: { id: userId } },
+          content: { connect: { id: contentId } },
           position: h.position ?? 0,
           duration: h.duration ?? 0,
           listenedDuration: h.listenedDuration ?? 0,

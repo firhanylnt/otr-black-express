@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import type { ContentStatus } from '@prisma/client'
 import { contentService } from '../services/content.service.js'
 import { uploadFileToR2 } from '../services/r2.js'
 import { isR2Configured } from '../config.js'
@@ -54,7 +55,7 @@ export const playlistController = {
       type: 'playlist',
       category: (b.category as 'picks' | 'residents' | 'guests' | 'featured' | 'program') ?? 'guests',
       coverUrl,
-      status: (b.status as 'draft' | 'pending' | 'published') ?? 'draft',
+      status: (b.status as ContentStatus) ?? 'pending',
       creatorId: userId,
     })
     res.status(201).json({ success: true, data: playlist })
@@ -85,7 +86,7 @@ export const playlistController = {
       title: b.title as string,
       description: b.description as string,
       coverUrl: b.coverUrl as string,
-      status: b.status as 'draft' | 'pending' | 'published',
+      status: b.status as ContentStatus,
     })
     res.json({ success: true, data: playlist })
   },

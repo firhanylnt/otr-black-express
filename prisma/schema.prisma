@@ -35,9 +35,7 @@ enum ContentCategory {
 }
 
 enum ContentStatus {
-  draft
   pending
-  approved
   rejected
   published
 }
@@ -110,7 +108,7 @@ model Content {
   duration        Int?
   releaseDate     String?       @map("release_date")
   scheduledAt     String?       @map("scheduled_at")
-  status          ContentStatus @default(draft)
+  status          ContentStatus @default(pending)
   rejectionReason String?       @map("rejection_reason")
   creatorId       Int?          @map("creator_id")
   reviewedBy      Int?          @map("reviewed_by")
@@ -129,6 +127,7 @@ model Content {
   tracks    Track[]
   likesUser Like[]
   playHistory PlayHistory[]
+  picks     Pick[]
 
   @@index([status])
   @@index([creatorId])
@@ -318,11 +317,14 @@ model Pick {
   id           Int      @id @default(autoincrement())
   contentType  String   @map("content_type")
   contentId    Int      @map("content_id")
-  curatorNote  String?   @map("curator_note")
+  curatorNote  String?  @map("curator_note")
   sortOrder    Int      @default(0) @map("sort_order")
   isActive     Int      @default(1) @map("is_active")
   createdAt    DateTime @default(now()) @map("created_at")
 
+  content Content @relation(fields: [contentId], references: [id])
+
+  @@index([contentId])
   @@map("picks")
 }
 
@@ -355,7 +357,7 @@ model PlayHistory {
   playedAt       DateTime @default(now()) @map("played_at")
 
   user    User    @relation(fields: [userId], references: [id])
-  content Content @relation(fields: [contentId], references: [id])
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([contentId])

@@ -18,10 +18,11 @@ export const userService = {
       where.role = filters.status as UserRole
     }
     if (filters.role) where.role = filters.role as UserRole
-    if (filters.search) {
+    const searchTerm = filters.search?.trim()
+    if (searchTerm && searchTerm !== 'undefined' && searchTerm !== 'null') {
       where.OR = [
-        { email: { contains: filters.search, mode: 'insensitive' } },
-        { username: { contains: filters.search, mode: 'insensitive' } },
+        { email: { contains: searchTerm, mode: 'insensitive' } },
+        { username: { contains: searchTerm, mode: 'insensitive' } },
       ]
     }
     const [rows, total] = await Promise.all([

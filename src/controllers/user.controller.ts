@@ -4,10 +4,11 @@ import { userService } from '../services/user.service.js'
 export const userController = {
   async list(req: Request, res: Response): Promise<void> {
     const { status, search, page, limit, role } = req.query
+    const searchStr = typeof search === 'string' && search && search !== 'undefined' && search !== 'null' ? search : undefined
     const result = await userService.list({
-      status: status as string | undefined,
-      role: role as string | undefined,
-      search: search as string | undefined,
+      status: (status as string) && (status as string) !== 'undefined' ? (status as string) : undefined,
+      role: (role as string) && (role as string) !== 'undefined' ? (role as string) : undefined,
+      search: searchStr,
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
     })
