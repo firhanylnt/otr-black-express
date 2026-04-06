@@ -47,6 +47,20 @@ enum EventStatus {
   cancelled
 }
 
+model EventType {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  sortOrder Int      @default(0) @map("sort_order")
+  isActive  Int      @default(1) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  events    Event[]
+
+  @@map("event_types")
+}
+
 enum ProductCategory {
   apparel
   vinyl
@@ -165,10 +179,14 @@ model Event {
   price       String?
   isFree      Int         @default(0) @map("is_free")
   status      EventStatus @default(upcoming)
+  eventTypeId Int?        @map("event_type_id")
   createdAt   DateTime    @default(now()) @map("created_at")
+
+  eventType   EventType?  @relation(fields: [eventTypeId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([startDate, endDate])
+  @@index([eventTypeId])
   @@map("events")
 }
 

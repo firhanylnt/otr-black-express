@@ -3,7 +3,27 @@ import type { EventStatus } from '@prisma/client'
 
 const DEFAULT_LIMIT = 20
 
-function toEventDto(e: { id: number; title: string; slug: string; description: string | null; coverUrl: string | null; bannerUrl: string | null; venue: string | null; address: string | null; city: string | null; country: string | null; startDate: string; endDate: string | null; ticketUrl: string | null; price: string | null; isFree: number; status: string; createdAt: Date }) {
+function toEventDto(e: {
+  id: number
+  title: string
+  slug: string
+  description: string | null
+  coverUrl: string | null
+  bannerUrl: string | null
+  venue: string | null
+  address: string | null
+  city: string | null
+  country: string | null
+  startDate: string
+  endDate: string | null
+  ticketUrl: string | null
+  price: string | null
+  isFree: number
+  status: string
+  eventTypeId: number | null
+  createdAt: Date
+  eventType?: { id: number; name: string; slug: string } | null
+}) {
   return {
     id: e.id,
     title: e.title,
@@ -21,6 +41,8 @@ function toEventDto(e: { id: number; title: string; slug: string; description: s
     price: e.price,
     isFree: Boolean(e.isFree),
     status: e.status,
+    eventTypeId: e.eventTypeId,
+    eventType: e.eventType ? { id: e.eventType.id, name: e.eventType.name, slug: e.eventType.slug } : null,
     createdAt: e.createdAt,
   }
 }
@@ -33,7 +55,13 @@ export const eventService = {
     if (filters.status) where.status = filters.status as EventStatus
     if (filters.search) where.OR = [{ title: { contains: filters.search, mode: 'insensitive' } }, { description: { contains: filters.search, mode: 'insensitive' } }]
     const [rows, total] = await Promise.all([
-      prisma.event.findMany({ where, orderBy: { startDate: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      prisma.event.findMany({
+        where,
+        orderBy: { startDate: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { eventType: { select: { id: true, name: true, slug: true } } },
+      }),
       prisma.event.count({ where }),
     ])
     return { data: rows.map(toEventDto), meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
@@ -43,6 +71,7 @@ export const eventService = {
     const rows = await prisma.event.findMany({
       where: { status: 'upcoming' },
       orderBy: { startDate: 'asc' },
+      include: { eventType: { select: { id: true, name: true, slug: true } } },
     })
     return rows.map(toEventDto)
   },
@@ -52,21 +81,28 @@ export const eventService = {
       where: { status: 'past' },
       orderBy: { startDate: 'desc' },
       take: limit,
+      include: { eventType: { select: { id: true, name: true, slug: true } } },
     })
     return rows.map(toEventDto)
   },
 
   async getBySlug(slug: string) {
-    const e = await prisma.event.findUnique({ where: { slug } })
+    const e = await prisma.event.findUnique({
+      where: { slug },
+      include: { eventType: { select: { id: true, name: true, slug: true } } },
+    })
     return e ? toEventDto(e) : null
   },
 
   async getById(id: number) {
-    const e = await prisma.event.findUnique({ where: { id } })
+    const e = await prisma.event.findUnique({
+      where: { id },
+      include: { eventType: { select: { id: true, name: true, slug: true } } },
+    })
     return e ? toEventDto(e) : null
   },
 
-  async create(data: { title: string; slug: string; description?: string | null; coverUrl?: string | null; bannerUrl?: string | null; venue?: string | null; address?: string | null; city?: string | null; country?: string | null; startDate?: string | null; endDate?: string | null; ticketUrl?: string | null; price?: string | null; isFree?: boolean; status?: EventStatus }) {
+  async create(data: { title: string; slug: string; description?: string | null; coverUrl?: string | null; bannerUrl?: string | null; venue?: string | null; address?: string | null; city?: string | null; country?: string | null; startDate?: string | null; endDate?: string | null; ticketUrl?: string | null; price?: string | null; isFree?: boolean; status?: EventStatus; eventTypeId?: number | null }) {
     const e = await prisma.event.create({
       data: {
         title: data.title,
@@ -84,12 +120,17 @@ export const eventService = {
         price: data.price ?? null,
         isFree: data.isFree ? 1 : 0,
         status: data.status ?? 'upcoming',
+        eventTypeId: data.eventTypeId ?? null,
       },
     })
-    return toEventDto(e)
+    const withType = await prisma.event.findUnique({
+      where: { id: e.id },
+      include: { eventType: { select: { id: true, name: true, slug: true } } },
+    })
+    return withType ? toEventDto(withType) : toEventDto(e)
   },
 
-  async update(id: number, data: Partial<{ title: string; description: string; coverUrl: string; bannerUrl: string; venue: string; address: string; city: string; country: string; startDate: string; endDate: string; ticketUrl: string; price: string; isFree: boolean; status: EventStatus }>) {
+  async update(id: number, data: Partial<{ title: string; description: string; coverUrl: string; bannerUrl: string; venue: string; address: string; city: string; country: string; startDate: string; endDate: string; ticketUrl: string; price: string; isFree: boolean; status: EventStatus; eventTypeId: number | null }>) {
     const e = await prisma.event.update({
       where: { id },
       data: {
@@ -107,9 +148,14 @@ export const eventService = {
         ...(data.price !== undefined && { price: data.price }),
         ...(data.isFree !== undefined && { isFree: data.isFree ? 1 : 0 }),
         ...(data.status !== undefined && { status: data.status }),
+        ...(data.eventTypeId !== undefined && { eventTypeId: data.eventTypeId }),
       },
     })
-    return toEventDto(e)
+    const withType = await prisma.event.findUnique({
+      where: { id: e.id },
+      include: { eventType: { select: { id: true, name: true, slug: true } } },
+    })
+    return withType ? toEventDto(withType) : toEventDto(e)
   },
 
   async delete(id: number): Promise<boolean> {

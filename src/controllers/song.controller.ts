@@ -116,12 +116,12 @@ export const songController = {
       isAdmin
         ? ((b.status as 'pending' | 'published') === 'published' ? 'published' : 'pending')
         : 'pending'
-    const tagsRaw = b.tags ?? b.moods
+    const tagsRaw = b.tags ?? b.moods ?? b.moodIds
     const tagsValue =
       tagsRaw == null
         ? null
         : Array.isArray(tagsRaw)
-          ? JSON.stringify(tagsRaw)
+          ? JSON.stringify(tagsRaw.map((v: unknown) => (typeof v === 'number' ? v : String(v))))
           : String(tagsRaw)
     const genresRaw = b.genres ?? b.genreIds
     const genresValue =
@@ -172,16 +172,20 @@ export const songController = {
       return
     }
     const updates: Record<string, unknown> = {}
-    const tagsInput = b.tags ?? b.moods
+    const tagsInput = b.tags ?? b.moods ?? b.moodIds
     const genresInput = b.genres ?? b.genreIds
     const map: Record<string, string> = {
       title: 'title', description: 'description', coverUrl: 'coverUrl', audioUrl: 'audioUrl',
       videoUrl: 'videoUrl', youtubeEmbed: 'youtubeEmbed', duration: 'duration', releaseDate: 'releaseDate',
       status: 'status', tags: 'tags', genres: 'genres',
     }
+    const toTagOrNum = (v: unknown): string | number => (typeof v === 'number' ? v : String(v))
     for (const [k, col] of Object.entries(map)) {
       if (k === 'tags' && tagsInput !== undefined) {
-        (updates as Record<string, unknown>)[col] = Array.isArray(tagsInput) ? JSON.stringify(tagsInput) : tagsInput
+        const arr: (string | number)[] | unknown = Array.isArray(tagsInput)
+          ? tagsInput.map(toTagOrNum)
+          : tagsInput
+        ;(updates as Record<string, unknown>)[col] = Array.isArray(arr) ? JSON.stringify(arr) : arr
       } else if (k === 'genres' && genresInput !== undefined) {
         (updates as Record<string, unknown>)[col] = Array.isArray(genresInput) ? JSON.stringify(genresInput) : genresInput
       } else if (b[k] !== undefined) {

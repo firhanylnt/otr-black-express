@@ -6,6 +6,7 @@ import songs from './songs.js'
 import albums from './albums.js'
 import playlists from './playlists.js'
 import events from './events.js'
+import eventTypes from './event-types.js'
 import genres from './genres.js'
 import moods from './moods.js'
 import users from './users.js'
@@ -28,6 +29,7 @@ router.use(`${prefix}/songs`, songs)
 router.use(`${prefix}/albums`, albums)
 router.use(`${prefix}/playlists`, playlists)
 router.use(`${prefix}/events`, events)
+router.use(`${prefix}/event-types`, eventTypes)
 router.use(`${prefix}/genres`, genres)
 router.use(`${prefix}/moods`, moods)
 router.use(`${prefix}/users`, users)

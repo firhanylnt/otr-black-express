@@ -83,6 +83,7 @@ export const eventController = {
       price: (b.price as string) ?? null,
       isFree: Boolean(b.isFree),
       status: (b.status as 'upcoming' | 'ongoing' | 'past' | 'cancelled') ?? 'upcoming',
+      eventTypeId: b.eventTypeId != null ? Number(b.eventTypeId) : null,
     })
     res.status(201).json({ success: true, data: event })
   },
@@ -109,9 +110,13 @@ export const eventController = {
       return
     }
     const updates: Record<string, unknown> = {}
-    const keys = ['title', 'description', 'coverUrl', 'bannerUrl', 'venue', 'address', 'city', 'country', 'startDate', 'endDate', 'ticketUrl', 'price', 'isFree', 'status']
+    const keys = ['title', 'description', 'coverUrl', 'bannerUrl', 'venue', 'address', 'city', 'country', 'startDate', 'endDate', 'ticketUrl', 'price', 'isFree', 'status', 'eventTypeId']
     for (const k of keys) {
-      if (b[k] !== undefined) updates[k] = k === 'isFree' ? Boolean(b[k]) : b[k]
+      if (b[k] !== undefined) {
+        if (k === 'isFree') updates[k] = Boolean(b[k])
+        else if (k === 'eventTypeId') updates[k] = b[k] === null || b[k] === '' ? null : Number(b[k])
+        else updates[k] = b[k]
+      }
     }
     const event = await eventService.update(id, updates as Parameters<typeof eventService.update>[1])
     res.json({ success: true, data: event })
