@@ -1,0 +1,288 @@
+{
+  "todo": [
+    {
+      "No": "2",
+      "Page/Section": "Homepage - a.hero__main banner",
+      "Steps to Reproduce": "1. Open homepage\n2. Click on the main hero banner",
+      "Expected": "Banner navigates to a specific detail page",
+      "Actual (Bug)": "No navigation occurs — detail page destination is undefined",
+      "Priority Status": "High",
+      "Status": "To-do",
+      "Notes": "Needs routing target from PO"
+    },
+    {
+      "No": "3",
+      "Page/Section": "Homepage - a.hero_card",
+      "Steps to Reproduce": "1. Open homepage\n2. Click on hero card (1st & 2nd card)",
+      "Expected": "Card navigates to a specific detail page",
+      "Actual (Bug)": "No navigation occurs — detail page destination is undefined",
+      "Priority Status": "High",
+      "Status": "To-do",
+      "Notes": "Same issue as No. 2 — confirm if same root cause"
+    },
+    {
+      "No": "16",
+      "Page/Section": "Archive - Featured - Main banner - Detail page",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Featured\" tab\n3. Click on the main banner",
+      "Expected": "Open the content's detail page",
+      "Actual (Bug)": "Page not found",
+      "Priority Status": "High",
+      "Status": "To-do",
+      "Notes": "The interface for this page has not been developed."
+    },
+    {
+      "No": "17",
+      "Page/Section": "Archive - Featured - Poster photo - Detail page",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Featured\" tab\n3. Click on any photo (e.g. Lowkey Collective)",
+      "Expected": "Open the content's detail page",
+      "Actual (Bug)": "Page not found",
+      "Priority Status": "High",
+      "Status": "To-do",
+      "Notes": "The interface for this page has not been developed."
+    },
+    {
+      "No": "1",
+      "Page/Section": "Homepage - a.hero_card",
+      "Steps to Reproduce": "1. Open homepage on first visit or hard refresh\n2. Observe initial render",
+      "Expected": "Hero card appears immediately on load",
+      "Actual (Bug)": "Hero card appears with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "5",
+      "Page/Section": "Archive - All",
+      "Steps to Reproduce": "1. Open Archive page\n2. All page should be the default page",
+      "Expected": "Content cards appears immediately on load",
+      "Actual (Bug)": "Contents card appears with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "6",
+      "Page/Section": "Archive - All - Filter cards",
+      "Steps to Reproduce": "1. Open Archive page\n2. All page should be the default page",
+      "Expected": "There should be a filter card section below the Tab description",
+      "Actual (Bug)": "There is no filter cards displayed on the All page",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Filter cards section is not rendering on the All tab. Check if the filter card component is conditionally hidden on the All view, or if it's only mounted for specific tabs (Picks, Residents, etc.). May be a missing render condition or the component isn't being called on the All page"
+    },
+    {
+      "No": "8",
+      "Page/Section": "Archive - Picks",
+      "Steps to Reproduce": "1. Open Picks page",
+      "Expected": "Content cards appears immediately on load",
+      "Actual (Bug)": "Contents card appears with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "11",
+      "Page/Section": "Archive - Residents",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Residents\" tab",
+      "Expected": "Content cards appears immediately on load",
+      "Actual (Bug)": "Contents card appears with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "13",
+      "Page/Section": "Archive - Guests",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Guests\" tab",
+      "Expected": "Content cards appears immediately on load",
+      "Actual (Bug)": "Contents card appears with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "18",
+      "Page/Section": "Discover - Browse by Genre",
+      "Steps to Reproduce": "1. Open discover page\n2. Browse by Genre should be at the top section of the page",
+      "Expected": "Contents appears immediately on load",
+      "Actual (Bug)": "Contents appear with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "19",
+      "Page/Section": "Discover - Browse by Genre",
+      "Steps to Reproduce": "1. Open discover page\n2. Browse by Genre should be at the top section of the page",
+      "Expected": "Filter cards follow a consistent black - white - black alternating color pattern",
+      "Actual (Bug)": "Color alternation pattern breaks on certain screen sizes",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Color alternation should always follow black - white - black regardless of how many columns are displayed per row. Check if the color logic is index-based (0, 1, 2 = black, white, black). if so it should hold across all breakpoints without needing to recalculate per row."
+    },
+    {
+      "No": "20",
+      "Page/Section": "Discover - Mood & Vibes",
+      "Steps to Reproduce": "1. Open discover page\n2. Scroll on Mood & Vibes section",
+      "Expected": "Contents appears immediately on load",
+      "Actual (Bug)": "Contents appear with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "21",
+      "Page/Section": "Discover - Mood & Vibes",
+      "Steps to Reproduce": "1. Open discover page\n2. Scroll on Mood & Vibes section",
+      "Expected": "Filter cards follow a consistent black - white - black alternating color pattern",
+      "Actual (Bug)": "Color alternation pattern breaks on certain screen sizes",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Color alternation should always follow black - white - black regardless of how many columns are displayed per row. Check if the color logic is index-based (0, 1, 2 = black, white, black). if so it should hold across all breakpoints without needing to recalculate per row."
+    },
+    {
+      "No": "22",
+      "Page/Section": "Discover - Browse by Genre & Mood & Vibes - Content Cards",
+      "Steps to Reproduce": "1. Open Discover page \n2. Check filter cards on Browse by Genre and Mood & Vibes sections across desktop, responsive, and mobile views",
+      "Expected": "Filter cards in Browse by Genre and Mood & Vibes have identical widths on the same screen size",
+      "Actual (Bug)": "Card widths differ between the two sections, Browse by Genre cards appear wider/narrower than Mood & Vibes cards",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Both sections likely have separate width rules. Align them to use the same width value or the same shared class so they stay consistent across all breakpoints automatically."
+    },
+    {
+      "No": "24",
+      "Page/Section": "Program",
+      "Steps to Reproduce": "1. Open program page",
+      "Expected": "Contents appears immediately on load",
+      "Actual (Bug)": "Contents appear with a noticeable delay (estimated ~1-2s)",
+      "Priority Status": "Low",
+      "Status": "To-do",
+      "Notes": "Check animation/lazy load trigger"
+    },
+    {
+      "No": "9",
+      "Page/Section": "Archive - Picks - Filter cards",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Picks\" tab\n3. Click on any filter below the tab description (e.g. \"Mixtape\")",
+      "Expected": "Only shows contents with the clicked label",
+      "Actual (Bug)": "No changes happen after clicking any of the filter card",
+      "Priority Status": "Medium",
+      "Status": "To-do",
+      "Notes": ""
+    },
+    {
+      "No": "12",
+      "Page/Section": "Archive - Residents - Filter cards",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Residents\" tab\n3. Click on any filter below the tab description (e.g. \"Hip Hop\")",
+      "Expected": "Only shows contents with the clicked label",
+      "Actual (Bug)": "No changes happen after clicking any of the filter card",
+      "Priority Status": "Medium",
+      "Status": "To-do",
+      "Notes": ""
+    },
+    {
+      "No": "14",
+      "Page/Section": "Archive - Guests - Filter cards",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Guests\" tab\n3. Click on any filter below the tab description (e.g. \"Hip Hop\")",
+      "Expected": "Only shows contents with the clicked label",
+      "Actual (Bug)": "No changes happen after clicking any of the filter card",
+      "Priority Status": "Medium",
+      "Status": "To-do",
+      "Notes": ""
+    }
+  ],
+  "review": [
+    {
+      "No": "4",
+      "Page/Section": "Homepage - Residents Section",
+      "Steps to Reproduce": "1. Open homepage\n2. Scroll on residents section\n3. Click on any of the residents photo",
+      "Expected": "Profile summary of the clicked resident appears",
+      "Actual (Bug)": "Profile summary of the adjacent resident appears instead (wrong index displayed)",
+      "Priority Status": "High",
+      "Status": "Review",
+      "Notes": "Likely an off-by-one error in index mapping between photo array and profile data. Check how the click handler references the active index"
+    },
+    {
+      "No": "10",
+      "Page/Section": "Archive - Picks - Song photo - Detail page",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Picks\" tab\n3. Click on any song photo (e.g. Best Song by Unkown)",
+      "Expected": "Opens the song's individual detail page",
+      "Actual (Bug)": "Detail page shows a list of songs while the label says it is a Single",
+      "Priority Status": "High",
+      "Status": "Review",
+      "Notes": "Same issue as No. 5 — confirm if same root cause"
+    },
+    {
+      "No": "15",
+      "Page/Section": "Archive - Guests - Artist photo - Detail page",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"Guests\" tab\n3. Click on any photo (e.g. Lowkey Collective)",
+      "Expected": "Open the artist's detail page",
+      "Actual (Bug)": "Detail page shows \"Dj Alleycat\"",
+      "Priority Status": "High",
+      "Status": "Review",
+      "Notes": "This happens on any of the guests' detail page"
+    },
+    {
+      "No": "23",
+      "Page/Section": " Discover - Full Catalog",
+      "Steps to Reproduce": "1. Open discover page\n2. Scroll on Full Catalog\n3. Click on \"View Details\" button on any content card (e.g. Best Song by Unknown)",
+      "Expected": "Card navigates to a specific detail page",
+      "Actual (Bug)": "Card navigate to the wrong detail page",
+      "Priority Status": "High",
+      "Status": "Review",
+      "Notes": ""
+    },
+    {
+      "No": "7",
+      "Page/Section": "Archive - All - Song photo - Detail page",
+      "Steps to Reproduce": "1. Open archive page\n2. Click \"All\" tab (should be the default archive page)\n3. Click on any song photo (e.g. Best Song by Unkown)",
+      "Expected": "Opens the song's individual detail page",
+      "Actual (Bug)": "Detail page shows a list of songs while the label says it is a Single",
+      "Priority Status": "Medium",
+      "Status": "Review",
+      "Notes": "Possible label misdetection by auto-detect logic, Single is being routed as Album/Mixtape. Check if label value is correctly passed to the click handler. Cross-check with label auto-detect logic"
+    }
+  ],
+  "done": [
+    {
+      "No": "25",
+      "Page/Section": "Program - Content Detail Page - Music Player",
+      "Steps to Reproduce": "1. Open program page\n2. Click on any content card (e.g. Indie Alley Radio)\n3. Play any content (e.g #45)",
+      "Expected": "Floating music player appears at the bottom of the page and starts playing",
+      "Actual (Bug)": "No music player appears and music does not play",
+      "Priority Status": "High",
+      "Status": "Done",
+      "Notes": ""
+    },
+    {
+      "No": "26",
+      "Page/Section": "Program - Content Detail Page - Embedded Youtube Link Content",
+      "Steps to Reproduce": "1. Open program page \n2. Click on any content card (e.g. warehouse session)\n3. Check for youtube play button below the content card",
+      "Expected": "YouTube play button appears below the content card",
+      "Actual (Bug)": "YouTube play button font/icon is not showing below the content card (only shows when on hovers)",
+      "Priority Status": "Low",
+      "Status": "Done",
+      "Notes": ""
+    },
+    {
+      "No": "27",
+      "Page/Section": "Program - Content Detail Page - Embedded Youtube Link Content",
+      "Steps to Reproduce": "1. Open program page \n2. Click on any content card (e.g. warehouse session)\n3. Check inside the content card",
+      "Expected": "No play button displayed inside the content card",
+      "Actual (Bug)": "A play button is showing inside the content card when it shouldn't be",
+      "Priority Status": "Low",
+      "Status": "Done",
+      "Notes": ""
+    },
+    {
+      "No": "28",
+      "Page/Section": "Program - Content detail page - More Program section",
+      "Steps to Reproduce": "1. Open program page \n2. Click on any content card (e.g. warehouse session)\n3. Scroll on More Programs\n4. Hovers on any content cards",
+      "Expected": "Program title, episode amount, and a short description should appear on hover.",
+      "Actual (Bug)": "Nothing appears on hover",
+      "Priority Status": "Medium",
+      "Status": "Done",
+      "Notes": ""
+    }
+  ]
+}
