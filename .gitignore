@@ -35,3 +35,7 @@ prisma/migrations/**/migration_lock.toml
 .cache
 coverage
 .nyc_output
+
+# Local seed media (uploaded to R2; regenerate with scripts/upload-seed-media.ts)
+public/media/
+public/audio/
