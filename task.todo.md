@@ -24,7 +24,7 @@
 
 ---
 
-### [  ] #4 - Homepage - Residents Section ⏱️ 15 min
+### [X] #4 - Homepage - Residents Section ⏱️ 15 min
 **Steps to Reproduce:**
 1. Open homepage
 2. Scroll on residents section
@@ -48,7 +48,7 @@
 
 ---
 
-### [  ] #15 - Archive - Guests - Artist photo - Detail page
+### [X] #15 - Archive - Guests - Artist photo - Detail page
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Guests" tab
@@ -84,7 +84,7 @@
 
 ---
 
-### [  ] #23 - Discover - Full Catalog
+### [X] #23 - Discover - Full Catalog
 **Steps to Reproduce:**
 1. Open discover page
 2. Scroll on Full Catalog
@@ -95,7 +95,7 @@
 
 ---
 
-### [  ] #25 - Program - Content Detail Page - Music Player
+### [X] #25 - Program - Content Detail Page - Music Player
 **Steps to Reproduce:**
 1. Open program page
 2. Click on any content card (e.g. Indie Alley Radio)
@@ -154,7 +154,7 @@
 
 ---
 
-### [  ] #28 - Program - Content detail page - More Program section
+### [X] #28 - Program - Content detail page - More Program section
 **Steps to Reproduce:**
 1. Open program page
 2. Click on any content card (e.g. warehouse session)
@@ -168,7 +168,7 @@
 
 ## Low Priority
 
-### [O] #1 - Homepage - a.hero_card
+### [X] #1 - Homepage - a.hero_card
 **Steps to Reproduce:**
 1. Open homepage on first visit or hard refresh
 2. Observe initial render
@@ -179,7 +179,7 @@
 
 ---
 
-### [O] #5 - Archive - All
+### [X] #5 - Archive - All
 **Steps to Reproduce:**
 1. Open Archive page
 2. All page should be the default page
@@ -201,7 +201,7 @@
 
 ---
 
-### [O] #8 - Archive - Picks
+### [X] #8 - Archive - Picks
 **Steps to Reproduce:**
 1. Open Picks page
 
@@ -211,7 +211,7 @@
 
 ---
 
-### [O] #11 - Archive - Residents
+### [X] #11 - Archive - Residents
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Residents" tab
@@ -222,7 +222,7 @@
 
 ---
 
-### [O] #13 - Archive - Guests
+### [X] #13 - Archive - Guests
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Guests" tab
@@ -233,7 +233,7 @@
 
 ---
 
-### [O] #18 - Discover - Browse by Genre
+### [X] #18 - Discover - Browse by Genre
 **Steps to Reproduce:**
 1. Open discover page
 2. Browse by Genre should be at the top section of the page
@@ -255,7 +255,7 @@
 
 ---
 
-### [O] #20 - Discover - Mood & Vibes
+### [X] #20 - Discover - Mood & Vibes
 **Steps to Reproduce:**
 1. Open discover page
 2. Scroll on Mood & Vibes section
@@ -288,7 +288,7 @@
 
 ---
 
-### [O] #24 - Program
+### [X] #24 - Program
 **Steps to Reproduce:**
 1. Open program page
 
@@ -298,7 +298,7 @@
 
 ---
 
-### [  ] #26 - Program - Content Detail Page - Embedded Youtube Link Content
+### [X] #26 - Program - Content Detail Page - Embedded Youtube Link Content
 **Steps to Reproduce:**
 1. Open program page
 2. Click on any content card (e.g. warehouse session)
