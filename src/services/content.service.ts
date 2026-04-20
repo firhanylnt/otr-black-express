@@ -264,6 +264,7 @@ export const contentService = {
     youtubeEmbed?: string | null
     duration?: number | null
     releaseDate?: string | null
+    scheduledAt?: string | null
     status?: ContentStatus
     creatorId: number
     tags?: string | null
@@ -282,6 +283,7 @@ export const contentService = {
         youtubeEmbed: data.youtubeEmbed ?? null,
         duration: data.duration ?? null,
         releaseDate: data.releaseDate ?? null,
+        scheduledAt: data.scheduledAt ?? null,
         status: data.status ?? 'pending',
         creatorId: data.creatorId,
         tags: data.tags ?? null,
@@ -291,7 +293,7 @@ export const contentService = {
     return toSongDto(c)
   },
 
-  async update(id: number, data: Partial<{ title: string; description: string; coverUrl: string; audioUrl: string; videoUrl: string; youtubeEmbed: string; duration: number; releaseDate: string; status: ContentStatus; tags: string; genres: string }>) {
+  async update(id: number, data: Partial<{ title: string; description: string; coverUrl: string; audioUrl: string; videoUrl: string; youtubeEmbed: string; duration: number; releaseDate: string; scheduledAt: string; category: string; status: ContentStatus; tags: string; genres: string }>) {
     const c = await prisma.content.update({
       where: { id },
       data: {
@@ -303,6 +305,8 @@ export const contentService = {
         ...(data.youtubeEmbed !== undefined && { youtubeEmbed: data.youtubeEmbed }),
         ...(data.duration !== undefined && { duration: data.duration }),
         ...(data.releaseDate !== undefined && { releaseDate: data.releaseDate }),
+        ...(data.scheduledAt !== undefined && { scheduledAt: data.scheduledAt }),
+        ...(data.category !== undefined && { category: data.category as 'picks' | 'residents' | 'guests' | 'featured' | 'program' }),
         ...(data.status !== undefined && { status: data.status }),
         ...(data.tags !== undefined && { tags: typeof data.tags === 'string' ? data.tags : JSON.stringify(data.tags) }),
         ...(data.genres !== undefined && { genres: typeof data.genres === 'string' ? data.genres : JSON.stringify(data.genres) }),
@@ -367,61 +371,33 @@ export const contentService = {
     const where: { type: ContentType; status?: ContentStatus } = { type }
     if (filters.status) where.status = filters.status as ContentStatus
     const [rows, total] = await Promise.all([
-      prisma.content.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      prisma.content.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { creator: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
+      }),
       prisma.content.count({ where }),
     ])
-    const toAlbumPlaylist = (c: typeof rows[0]) => ({
-      id: c.id,
-      title: c.title,
-      slug: c.slug,
-      description: c.description,
-      type: c.type,
-      category: c.category,
-      coverUrl: c.coverUrl,
-      audioUrl: c.audioUrl,
-      status: c.status,
-      creatorId: c.creatorId,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    })
-    return { data: rows.map(toAlbumPlaylist), meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
+    return { data: rows.map(toSongDto), meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
   },
 
   async getBySlugAndType(slug: string, type: ContentType) {
-    const c = await prisma.content.findFirst({ where: { slug, type } })
+    const c = await prisma.content.findFirst({
+      where: { slug, type },
+      include: { creator: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
+    })
     if (!c) return null
-    return {
-      id: c.id,
-      title: c.title,
-      slug: c.slug,
-      description: c.description,
-      type: c.type,
-      category: c.category,
-      coverUrl: c.coverUrl,
-      audioUrl: c.audioUrl,
-      status: c.status,
-      creatorId: c.creatorId,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    }
+    return { ...toSongDto(c), creator: c.creator ?? null }
   },
 
   async getByIdAndType(id: number, type: ContentType) {
-    const c = await prisma.content.findFirst({ where: { id, type } })
+    const c = await prisma.content.findFirst({
+      where: { id, type },
+      include: { creator: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
+    })
     if (!c) return null
-    return {
-      id: c.id,
-      title: c.title,
-      slug: c.slug,
-      description: c.description,
-      type: c.type,
-      category: c.category,
-      coverUrl: c.coverUrl,
-      audioUrl: c.audioUrl,
-      status: c.status,
-      creatorId: c.creatorId,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    }
+    return { ...toSongDto(c), creator: c.creator ?? null }
   },
 }

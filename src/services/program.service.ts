@@ -79,12 +79,14 @@ export const programService = {
   },
 
   async createEpisodesBulk(programId: number, episodes: { title: string; slug?: string; description?: string | null; audioUrl?: string | null; duration?: number | null; publishedAt?: string | null; sortOrder?: number }[]) {
-    for (const ep of episodes) {
-      const slug = ep.slug || ep.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-      await prisma.programEpisode.create({
-        data: { programId, title: ep.title, slug, description: ep.description ?? null, audioUrl: ep.audioUrl ?? null, duration: ep.duration ?? null, publishedAt: ep.publishedAt ?? null, sortOrder: ep.sortOrder ?? 0 },
+    await prisma.$transaction(
+      episodes.map((ep) => {
+        const slug = ep.slug || ep.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+        return prisma.programEpisode.create({
+          data: { programId, title: ep.title, slug, description: ep.description ?? null, audioUrl: ep.audioUrl ?? null, duration: ep.duration ?? null, publishedAt: ep.publishedAt ?? null, sortOrder: ep.sortOrder ?? 0 },
+        })
       })
-    }
+    )
     return this.getEpisodes(programId)
   },
 
