@@ -15,11 +15,12 @@ function getFiles(req: Request): { cover?: Express.Multer.File; audio?: Express.
 
 export const songController = {
   async list(req: Request, res: Response): Promise<void> {
-    const { genre, mood, search, page, limit } = req.query
+    const { genre, mood, search, category, page, limit } = req.query
     const result = await contentService.listSongsPublic({
       genre: genre as string | undefined,
       mood: mood as string | undefined,
       search: search as string | undefined,
+      category: category as string | undefined,
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
     })
