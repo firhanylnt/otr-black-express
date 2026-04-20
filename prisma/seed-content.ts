@@ -191,19 +191,19 @@ async function main() {
 
   // ── Albums ────────────────────────────────────────────────────────────
   const albums = [
-    { slug: 'concrete-jungle-ep',        title: 'CONCRETE JUNGLE EP',        desc: 'Five tracks of raw boom-bap from the streets. No features, no filler.',           cover: IMG.mohammed,    dur: 1320, creator: createdResidents['mc_streets'],    tags: ['energetic','dark'],      genres: ['hip-hop'],               cat: 'residents' as const },
-    { slug: 'street-symphony',           title: 'STREET SYMPHONY',           desc: 'The Alley Cats debut album. Jazz and hip-hop collide in Harlem.',                  cover: IMG.yuwei,       dur: 2640, creator: createdGuests['the_alley_cats'],   tags: ['groovy','nostalgic'],    genres: ['jazz','hip-hop'],        cat: 'guests'    as const },
-    { slug: 'deep-house-chronicles',     title: 'DEEP HOUSE CHRONICLES',     desc: 'Vinyl District digs deep. Eight tracks of pure house music.',                     cover: IMG.rick,        dur: 2880, creator: createdResidents['vinyl_district'], tags: ['groovy','party'],        genres: ['house','deep-house'],    cat: 'residents' as const },
-    { slug: 'otr-compilation-vol1',      title: 'OTR COMPILATION VOL.1',     desc: 'The first official OTR compilation. Residents and guests, all in one place.',     cover: IMG.disenador,   dur: 4200, creator: createdResidents['dj_underground'], tags: ['various','curated'],     genres: ['electronic','hip-hop'],  cat: 'featured'  as const },
-    { slug: 'ambient-city-lp',           title: 'AMBIENT CITY LP',           desc: 'DJ Pavement\'s debut long player. Field recordings meet deep house.',             cover: IMG.uran,        dur: 3600, creator: createdResidents['dj_pavement'],   tags: ['peaceful','hypnotic'],   genres: ['ambient','deep-house'],  cat: 'picks'     as const },
-    { slug: 'techno-underground-ep',     title: 'TECHNO UNDERGROUND EP',     desc: 'Night Owl goes deep. Four tracks of warehouse-ready techno.',                     cover: IMG.nikita,      dur: 1560, creator: createdResidents['night_owl'],     tags: ['dark','energetic'],      genres: ['techno'],                cat: 'residents' as const },
+    { slug: 'concrete-jungle-ep',        title: 'CONCRETE JUNGLE EP',        desc: 'Five tracks of raw boom-bap from the streets. No features, no filler.',           cover: IMG.mohammed,    audio: AUDIO.hiphop,  dur: 1320, creator: createdResidents['mc_streets'],    tags: ['energetic','dark'],      genres: ['hip-hop'],               cat: 'residents' as const },
+    { slug: 'street-symphony',           title: 'STREET SYMPHONY',           desc: 'The Alley Cats debut album. Jazz and hip-hop collide in Harlem.',                  cover: IMG.yuwei,       audio: AUDIO.cbpd,    dur: 2640, creator: createdGuests['the_alley_cats'],   tags: ['groovy','nostalgic'],    genres: ['jazz','hip-hop'],        cat: 'guests'    as const },
+    { slug: 'deep-house-chronicles',     title: 'DEEP HOUSE CHRONICLES',     desc: 'Vinyl District digs deep. Eight tracks of pure house music.',                     cover: IMG.rick,        audio: AUDIO.driving, dur: 2880, creator: createdResidents['vinyl_district'], tags: ['groovy','party'],        genres: ['house','deep-house'],    cat: 'residents' as const },
+    { slug: 'otr-compilation-vol1',      title: 'OTR COMPILATION VOL.1',     desc: 'The first official OTR compilation. Residents and guests, all in one place.',     cover: IMG.disenador,   audio: AUDIO.urban,   dur: 4200, creator: createdResidents['dj_underground'], tags: ['various','curated'],     genres: ['electronic','hip-hop'],  cat: 'featured'  as const },
+    { slug: 'ambient-city-lp',           title: 'AMBIENT CITY LP',           desc: 'DJ Pavement\'s debut long player. Field recordings meet deep house.',             cover: IMG.uran,        audio: AUDIO.dream,   dur: 3600, creator: createdResidents['dj_pavement'],   tags: ['peaceful','hypnotic'],   genres: ['ambient','deep-house'],  cat: 'picks'     as const },
+    { slug: 'techno-underground-ep',     title: 'TECHNO UNDERGROUND EP',     desc: 'Night Owl goes deep. Four tracks of warehouse-ready techno.',                     cover: IMG.nikita,      audio: AUDIO.fright,  dur: 1560, creator: createdResidents['night_owl'],     tags: ['dark','energetic'],      genres: ['techno'],                cat: 'residents' as const },
   ]
 
   for (const a of albums) {
     await upsertContent({
       slug: a.slug, title: a.title, description: a.desc,
       type: 'album', category: a.cat,
-      coverUrl: a.cover,
+      coverUrl: a.cover, audioUrl: a.audio,
       duration: a.dur, releaseDate: '2026-02-01',
       creatorId: a.creator, tags: a.tags, genres: a.genres,
       plays: Math.floor(Math.random() * 20000) + 2000,

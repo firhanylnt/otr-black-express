@@ -3,10 +3,11 @@ import { userService } from '../services/user.service.js'
 
 export const residentController = {
   async list(req: Request, res: Response): Promise<void> {
-    const { status, search, page, limit } = req.query
+    const { status, search, genre, page, limit } = req.query
     const result = await userService.listResidents({
       status: status as string | undefined,
       search: search as string | undefined,
+      genre: genre as string | undefined,
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
     })

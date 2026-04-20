@@ -137,6 +137,23 @@ async function updateDb(mapping: Map<string, string>) {
     }
   }
 
+  // Highlight: image, customImage
+  const highlights = await prisma.highlight.findMany({ select: { id: true, image: true, customImage: true } })
+  for (const h of highlights) {
+    const newImage = h.image ? mapping.get(h.image) : undefined
+    const newCustom = h.customImage ? mapping.get(h.customImage) : undefined
+    if (newImage || newCustom) {
+      await prisma.highlight.update({
+        where: { id: h.id },
+        data: {
+          ...(newImage ? { image: newImage } : {}),
+          ...(newCustom ? { customImage: newCustom } : {}),
+        },
+      })
+      updated++
+    }
+  }
+
   console.log(`\nDB: updated ${updated} rows`)
 }
 

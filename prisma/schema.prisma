@@ -343,6 +343,7 @@ model Pick {
   content Content @relation(fields: [contentId], references: [id])
 
   @@index([contentId])
+  @@unique([contentType, contentId])
   @@map("picks")
 }
 

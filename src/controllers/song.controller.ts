@@ -143,6 +143,7 @@ export const songController = {
       youtubeEmbed: (b.youtubeEmbed as string) ?? null,
       duration: b.duration != null ? Number(b.duration) : null,
       releaseDate: (b.releaseDate as string) ?? null,
+      scheduledAt: (b.scheduledAt as string) ?? null,
       status,
       creatorId: userId,
       tags: tagsValue,
@@ -178,7 +179,7 @@ export const songController = {
     const map: Record<string, string> = {
       title: 'title', description: 'description', coverUrl: 'coverUrl', audioUrl: 'audioUrl',
       videoUrl: 'videoUrl', youtubeEmbed: 'youtubeEmbed', duration: 'duration', releaseDate: 'releaseDate',
-      status: 'status', tags: 'tags', genres: 'genres',
+      scheduledAt: 'scheduledAt', category: 'category', status: 'status', tags: 'tags', genres: 'genres',
     }
     const toTagOrNum = (v: unknown): string | number => (typeof v === 'number' ? v : String(v))
     for (const [k, col] of Object.entries(map)) {

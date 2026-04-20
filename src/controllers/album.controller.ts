@@ -95,6 +95,7 @@ export const albumController = {
       title: b.title as string,
       description: b.description as string,
       coverUrl: b.coverUrl as string,
+      category: b.category as string,
       status: b.status as ContentStatus,
     })
     res.json({ success: true, data: album })
