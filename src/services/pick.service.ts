@@ -105,6 +105,10 @@ export const pickService = {
   },
 
   async create(data: { contentType: string; contentId: number; curatorNote?: string | null }) {
+    const existing = await prisma.pick.findFirst({
+      where: { contentType: data.contentType, contentId: data.contentId },
+    })
+    if (existing) return this.getById(existing.id)
     const p = await prisma.pick.create({
       data: { contentType: data.contentType, contentId: data.contentId, curatorNote: data.curatorNote ?? null },
     })
