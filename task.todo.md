@@ -2,7 +2,7 @@
 
 ## High Priority
 
-### [  ] #2 - Homepage - a.hero__main banner
+### [X] #2 - Homepage - a.hero__main banner
 **Steps to Reproduce:**
 1. Open homepage
 2. Click on the main hero banner
@@ -13,7 +13,7 @@
 
 ---
 
-### [  ] #3 - Homepage - a.hero_card
+### [X] #3 - Homepage - a.hero_card
 **Steps to Reproduce:**
 1. Open homepage
 2. Click on hero card (1st & 2nd card)
@@ -36,7 +36,7 @@
 
 ---
 
-### [  ] #10 - Archive - Picks - Song photo - Detail page
+### [X] #10 - Archive - Picks - Song photo - Detail page
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Picks" tab
@@ -60,7 +60,7 @@
 
 ---
 
-### [  ] #16 - Archive - Featured - Main banner - Detail page
+### [X] #16 - Archive - Featured - Main banner - Detail page
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Featured" tab
@@ -72,7 +72,7 @@
 
 ---
 
-### [  ] #17 - Archive - Featured - Poster photo - Detail page
+### [X] #17 - Archive - Featured - Poster photo - Detail page
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Featured" tab
@@ -109,7 +109,7 @@
 
 ## Medium Priority
 
-### [  ] #7 - Archive - All - Song photo - Detail page
+### [X] #7 - Archive - All - Song photo - Detail page
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "All" tab (should be the default archive page)
@@ -121,7 +121,7 @@
 
 ---
 
-### [  ] #9 - Archive - Picks - Filter cards ⏱️ 30 min (with #12, #14)
+### [X] #9 - Archive - Picks - Filter cards ⏱️ 30 min (with #12, #14)
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Picks" tab
@@ -132,7 +132,7 @@
 
 ---
 
-### [  ] #12 - Archive - Residents - Filter cards ⏱️ 30 min (with #9, #14)
+### [X] #12 - Archive - Residents - Filter cards ⏱️ 30 min (with #9, #14)
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Residents" tab
@@ -143,7 +143,7 @@
 
 ---
 
-### [  ] #14 - Archive - Guests - Filter cards ⏱️ 30 min (with #9, #12)
+### [X] #14 - Archive - Guests - Filter cards ⏱️ 30 min (with #9, #12)
 **Steps to Reproduce:**
 1. Open archive page
 2. Click "Guests" tab
@@ -190,7 +190,7 @@
 
 ---
 
-### [  ] #6 - Archive - All - Filter cards ⏱️ 20 min
+### [X] #6 - Archive - All - Filter cards ⏱️ 20 min
 **Steps to Reproduce:**
 1. Open Archive page
 2. All page should be the default page

@@ -3,10 +3,11 @@ import { userService } from '../services/user.service.js'
 
 export const creatorController = {
   async list(req: Request, res: Response): Promise<void> {
-    const { status, search, page, limit } = req.query
+    const { status, search, genre, page, limit } = req.query
     const result = await userService.listCreators({
       status: status as string | undefined,
       search: search as string | undefined,
+      genre: genre as string | undefined,
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
     })

@@ -102,17 +102,41 @@ export const userService = {
     return result.count > 0
   },
 
-  async listResidents(filters: { status?: string; search?: string; page?: number; limit?: number }) {
-    return this.list({ ...filters, role: 'resident' })
-  },
-
-  async listCreators(filters: { status?: string; search?: string; page?: number; limit?: number }) {
+  async listResidents(filters: { status?: string; search?: string; genre?: string; page?: number; limit?: number }) {
     const page = Number(filters.page) || 1
     const limit = Number(filters.limit) || DEFAULT_LIMIT
     const skip = (page - 1) * limit
-    const where: { role: { in: UserRole[] }; isSuspended?: boolean; OR?: { email?: { contains: string; mode: 'insensitive' }; username?: { contains: string; mode: 'insensitive' } }[] } = {
-      role: { in: ['guest_creator', 'resident'] },
+    const where: any = { role: 'resident' }
+    if (filters.status === 'active' || filters.status === 'suspended') {
+      where.isSuspended = filters.status === 'suspended'
     }
+    const searchTerm = filters.search?.trim()
+    if (searchTerm && searchTerm !== 'undefined' && searchTerm !== 'null') {
+      where.OR = [
+        { email: { contains: searchTerm, mode: 'insensitive' } },
+        { username: { contains: searchTerm, mode: 'insensitive' } },
+      ]
+    }
+    if (filters.genre) {
+      where.contentAsCreator = {
+        some: { status: 'published', genres: { contains: filters.genre, mode: 'insensitive' } },
+      }
+    }
+    const [rows, total] = await Promise.all([
+      prisma.user.findMany({ where, select: userSelect, orderBy: { createdAt: 'desc' }, skip, take: limit }),
+      prisma.user.count({ where }),
+    ])
+    return {
+      data: rows.map((u) => toUserDto(u)),
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    }
+  },
+
+  async listCreators(filters: { status?: string; search?: string; genre?: string; page?: number; limit?: number }) {
+    const page = Number(filters.page) || 1
+    const limit = Number(filters.limit) || DEFAULT_LIMIT
+    const skip = (page - 1) * limit
+    const where: any = { role: { in: ['guest_creator', 'resident'] } }
     if (filters.status === 'active' || filters.status === 'suspended') {
       where.isSuspended = filters.status === 'suspended'
     }
@@ -122,14 +146,13 @@ export const userService = {
         { username: { contains: filters.search, mode: 'insensitive' } },
       ]
     }
+    if (filters.genre) {
+      where.contentAsCreator = {
+        some: { status: 'published', genres: { contains: filters.genre, mode: 'insensitive' } },
+      }
+    }
     const [rows, total] = await Promise.all([
-      prisma.user.findMany({
-        where,
-        select: userSelect,
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      }),
+      prisma.user.findMany({ where, select: userSelect, orderBy: { createdAt: 'desc' }, skip, take: limit }),
       prisma.user.count({ where }),
     ])
     return {
