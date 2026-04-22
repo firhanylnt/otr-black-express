@@ -30,7 +30,9 @@ export const programController = {
   },
 
   async getById(req: Request, res: Response): Promise<void> {
-    const program = await programService.getById(Number(req.params.id))
+    const id = Number(req.params.id)
+    if (isNaN(id)) { res.status(400).json({ success: false, message: 'Invalid program ID' }); return; }
+    const program = await programService.getById(id)
     if (!program) {
       res.status(404).json({ success: false, message: 'Not found' })
       return
@@ -39,7 +41,9 @@ export const programController = {
   },
 
   async getEpisodes(req: Request, res: Response): Promise<void> {
-    const data = await programService.getEpisodes(Number(req.params.id))
+    const id = Number(req.params.id)
+    if (isNaN(id)) { res.status(400).json({ success: false, message: 'Invalid program ID' }); return; }
+    const data = await programService.getEpisodes(id)
     res.json({ success: true, data })
   },
 
@@ -72,6 +76,7 @@ export const programController = {
 
   async update(req: Request, res: Response): Promise<void> {
     const id = Number(req.params.id)
+    if (isNaN(id)) { res.status(400).json({ success: false, message: 'Invalid program ID' }); return; }
     const b = req.body as Record<string, unknown>
     const image = getFile(req, 'image')
     if (image && !isR2Configured()) {
@@ -97,7 +102,9 @@ export const programController = {
   },
 
   async delete(req: Request, res: Response): Promise<void> {
-    const deleted = await programService.delete(Number(req.params.id))
+    const id = Number(req.params.id)
+    if (isNaN(id)) { res.status(400).json({ success: false, message: 'Invalid program ID' }); return; }
+    const deleted = await programService.delete(id)
     if (!deleted) {
       res.status(404).json({ success: false, message: 'Not found' })
       return
@@ -107,6 +114,7 @@ export const programController = {
 
   async createEpisode(req: Request, res: Response): Promise<void> {
     const programId = Number(req.params.id)
+    if (isNaN(programId)) { res.status(400).json({ success: false, message: 'Invalid program ID' }); return; }
     const b = req.body as Record<string, unknown>
     const audio = getFile(req, 'audio')
     if (audio && !isR2Configured()) {
@@ -136,6 +144,7 @@ export const programController = {
 
   async createEpisodesBulk(req: Request, res: Response): Promise<void> {
     const programId = Number(req.params.id)
+    if (isNaN(programId)) { res.status(400).json({ success: false, message: 'Invalid program ID' }); return; }
     const episodes = req.body as Record<string, unknown>[]
     if (!Array.isArray(episodes)) {
       res.status(400).json({ success: false, message: 'Expected array' })
@@ -154,7 +163,9 @@ export const programController = {
   },
 
   async getEpisodeById(req: Request, res: Response): Promise<void> {
-    const episode = await programService.getEpisodeById(Number(req.params.episodeId))
+    const episodeId = Number(req.params.episodeId)
+    if (isNaN(episodeId)) { res.status(400).json({ success: false, message: 'Invalid episode ID' }); return; }
+    const episode = await programService.getEpisodeById(episodeId)
     if (!episode) {
       res.status(404).json({ success: false, message: 'Not found' })
       return
@@ -164,6 +175,7 @@ export const programController = {
 
   async updateEpisode(req: Request, res: Response): Promise<void> {
     const episodeId = Number(req.params.episodeId)
+    if (isNaN(episodeId)) { res.status(400).json({ success: false, message: 'Invalid episode ID' }); return; }
     const b = req.body as Record<string, unknown>
     const audio = getFile(req, 'audio')
     if (audio && !isR2Configured()) {
@@ -191,7 +203,9 @@ export const programController = {
   },
 
   async deleteEpisode(req: Request, res: Response): Promise<void> {
-    const deleted = await programService.deleteEpisode(Number(req.params.episodeId))
+    const episodeId = Number(req.params.episodeId)
+    if (isNaN(episodeId)) { res.status(400).json({ success: false, message: 'Invalid episode ID' }); return; }
+    const deleted = await programService.deleteEpisode(episodeId)
     if (!deleted) {
       res.status(404).json({ success: false, message: 'Not found' })
       return

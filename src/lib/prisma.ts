@@ -13,9 +13,8 @@ function getDatasourceUrl(): string {
     const parsed = new URL(url)
     const isSupabase = parsed.hostname?.includes('supabase') ?? false
     if (isSupabase) {
-      const limit = parsed.searchParams.get('connection_limit')
-      const safeLimit = limit ? Math.min(parseInt(limit, 10) || 1, 2) : 1
-      parsed.searchParams.set('connection_limit', String(safeLimit))
+      parsed.searchParams.set('connection_limit', '100')
+      parsed.searchParams.set('pool_timeout', '0')
       return parsed.toString()
     }
     return url
