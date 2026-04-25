@@ -125,11 +125,28 @@ export const contentService = {
     if (filters.mood) where.tags = { contains: filters.mood, mode: 'insensitive' }
     if (filters.creatorId && Number.isFinite(filters.creatorId)) where.creatorId = filters.creatorId
     if (filters.search) where.OR = [{ title: { contains: filters.search, mode: 'insensitive' } }, { description: { contains: filters.search, mode: 'insensitive' } }]
-    const [rows, total] = await Promise.all([
-      prisma.content.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+    const [rows, total, genreRows, moodRows] = await Promise.all([
+      prisma.content.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { creator: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
+      }),
       prisma.content.count({ where }),
+      prisma.genre.findMany({ where: { isActive: 1 }, select: { id: true, name: true, slug: true } }),
+      prisma.mood.findMany({ where: { isActive: 1 }, select: { id: true, name: true, slug: true } }),
     ])
-    return { data: rows.map(toSongDto), meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
+    const data = rows.map((c) => {
+      const { genres, tags } = resolveGenresAndTags(genreRows, moodRows, c.genres, c.tags)
+      return {
+        ...toSongDto(c),
+        creator: c.creator ? { id: c.creator.id, username: c.creator.username, displayName: c.creator.displayName, avatarUrl: c.creator.avatarUrl } : null,
+        genres,
+        tags,
+      }
+    })
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
   },
 
   async listSongsAdmin(filters: { status?: string; genre?: string; search?: string; page?: number; limit?: number }) {
@@ -203,11 +220,28 @@ export const contentService = {
     const limit = Number(filters.limit) || DEFAULT_LIMIT
     const where: { type: { in: ContentType[] }; creatorId: number; status?: ContentStatus } = { type: { in: SONG_TYPES }, creatorId: userId }
     if (filters.status) where.status = filters.status as ContentStatus
-    const [rows, total] = await Promise.all([
-      prisma.content.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+    const [rows, total, genreRows, moodRows] = await Promise.all([
+      prisma.content.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { creator: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
+      }),
       prisma.content.count({ where }),
+      prisma.genre.findMany({ where: { isActive: 1 }, select: { id: true, name: true, slug: true } }),
+      prisma.mood.findMany({ where: { isActive: 1 }, select: { id: true, name: true, slug: true } }),
     ])
-    return { data: rows.map(toSongDto), meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
+    const data = rows.map((c) => {
+      const { genres, tags } = resolveGenresAndTags(genreRows, moodRows, c.genres, c.tags)
+      return {
+        ...toSongDto(c),
+        creator: c.creator ? { id: c.creator.id, username: c.creator.username, displayName: c.creator.displayName, avatarUrl: c.creator.avatarUrl } : null,
+        genres,
+        tags,
+      }
+    })
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
   },
 
   async getSongStats() {

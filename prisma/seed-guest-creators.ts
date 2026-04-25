@@ -17,6 +17,8 @@ interface GuestSeed {
     genres: string[]
     tags: string[]
     coverUrl: string
+    audioUrl: string
+    duration: number
   }
 }
 
@@ -35,6 +37,8 @@ const guests: GuestSeed[] = [
       genres: ['House'],
       tags: ['Groovy', 'Dreamy'],
       coverUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80',
+      audioUrl: 'https://strg.playotr.cloud/audio/mixkit-driving-ambition-32.mp3',
+      duration: 180,
     },
   },
   {
@@ -51,6 +55,8 @@ const guests: GuestSeed[] = [
       genres: ['Techno'],
       tags: ['Dark', 'Energetic'],
       coverUrl: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80',
+      audioUrl: 'https://strg.playotr.cloud/audio/mixkit-hazy-after-hours-132.mp3',
+      duration: 240,
     },
   },
   {
@@ -67,6 +73,8 @@ const guests: GuestSeed[] = [
       genres: ['Ambient'],
       tags: ['Chill', 'Nostalgic'],
       coverUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80',
+      audioUrl: 'https://strg.playotr.cloud/audio/mixkit-serene-view-443.mp3',
+      duration: 210,
     },
   },
 ]
@@ -97,6 +105,8 @@ async function main() {
       update: {
         genres: JSON.stringify(g.content.genres),
         tags: JSON.stringify(g.content.tags),
+        audioUrl: g.content.audioUrl,
+        duration: g.content.duration,
       },
       create: {
         title: g.content.title,
@@ -104,6 +114,8 @@ async function main() {
         type: g.content.type,
         category: 'guests',
         coverUrl: g.content.coverUrl,
+        audioUrl: g.content.audioUrl,
+        duration: g.content.duration,
         creatorId: user.id,
         status: 'published',
         genres: JSON.stringify(g.content.genres),
