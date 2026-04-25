@@ -14,8 +14,8 @@ interface GuestSeed {
     title: string
     slug: string
     type: 'track' | 'album' | 'mixtape'
-    genres: string
-    tags: string
+    genres: string[]
+    tags: string[]
     coverUrl: string
   }
 }
@@ -32,8 +32,8 @@ const guests: GuestSeed[] = [
       title: 'Late Bloom',
       slug: 'koru-late-bloom',
       type: 'track',
-      genres: 'House',
-      tags: 'Groovy, Dreamy',
+      genres: ['House'],
+      tags: ['Groovy', 'Dreamy'],
       coverUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80',
     },
   },
@@ -48,8 +48,8 @@ const guests: GuestSeed[] = [
       title: 'Iron Garden',
       slug: 'vesta-iron-garden',
       type: 'mixtape',
-      genres: 'Techno',
-      tags: 'Dark, Energetic',
+      genres: ['Techno'],
+      tags: ['Dark', 'Energetic'],
       coverUrl: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80',
     },
   },
@@ -64,8 +64,8 @@ const guests: GuestSeed[] = [
       title: 'Quiet Cities',
       slug: 'haru-quiet-cities',
       type: 'album',
-      genres: 'Ambient',
-      tags: 'Chill, Nostalgic',
+      genres: ['Ambient'],
+      tags: ['Chill', 'Nostalgic'],
       coverUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80',
     },
   },
@@ -94,7 +94,10 @@ async function main() {
 
     const content = await prisma.content.upsert({
       where: { slug: g.content.slug },
-      update: {},
+      update: {
+        genres: JSON.stringify(g.content.genres),
+        tags: JSON.stringify(g.content.tags),
+      },
       create: {
         title: g.content.title,
         slug: g.content.slug,
@@ -103,8 +106,8 @@ async function main() {
         coverUrl: g.content.coverUrl,
         creatorId: user.id,
         status: 'published',
-        genres: g.content.genres,
-        tags: g.content.tags,
+        genres: JSON.stringify(g.content.genres),
+        tags: JSON.stringify(g.content.tags),
         reviewedAt: new Date(),
       },
     })
