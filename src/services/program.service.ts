@@ -1,11 +1,11 @@
 import { prisma } from '../lib/prisma.js'
 
-function toProgramDto(p: { id: number; title: string; slug: string; description: string | null; imageUrl: string | null; isActive: number; sortOrder: number; createdAt: Date; updatedAt: Date }) {
-  return { id: p.id, title: p.title, slug: p.slug, description: p.description, imageUrl: p.imageUrl, isActive: Boolean(p.isActive), sortOrder: p.sortOrder, createdAt: p.createdAt, updatedAt: p.updatedAt }
+function toProgramDto(p: { id: number; title: string; slug: string; description: string | null; imageUrl: string | null; isActive: number; sortOrder: number; createdAt: Date; updatedAt: Date; _count?: { episodes: number } }) {
+  return { id: p.id, title: p.title, slug: p.slug, description: p.description, imageUrl: p.imageUrl, isActive: Boolean(p.isActive), sortOrder: p.sortOrder, createdAt: p.createdAt, updatedAt: p.updatedAt, episodeCount: p._count?.episodes ?? 0 }
 }
 
-function toEpisodeDto(e: { id: number; programId: number; title: string; slug: string; description: string | null; audioUrl: string | null; duration: number | null; publishedAt: string | null; sortOrder: number; createdAt: Date }) {
-  return { id: e.id, programId: e.programId, title: e.title, slug: e.slug, description: e.description, audioUrl: e.audioUrl, duration: e.duration, publishedAt: e.publishedAt, sortOrder: e.sortOrder, createdAt: e.createdAt }
+function toEpisodeDto(e: { id: number; programId: number; title: string; slug: string; description: string | null; audioUrl: string | null; youtubeUrl: string | null; duration: number | null; publishedAt: string | null; sortOrder: number; createdAt: Date }) {
+  return { id: e.id, programId: e.programId, title: e.title, slug: e.slug, description: e.description, audioUrl: e.audioUrl, youtubeUrl: e.youtubeUrl, duration: e.duration, publishedAt: e.publishedAt, sortOrder: e.sortOrder, createdAt: e.createdAt }
 }
 
 export const programService = {
@@ -13,6 +13,7 @@ export const programService = {
     const rows = await prisma.program.findMany({
       where: includeInactive ? undefined : { isActive: 1 },
       orderBy: [{ sortOrder: 'asc' }, { title: 'asc' }],
+      include: { _count: { select: { episodes: true } } },
     })
     return rows.map(toProgramDto)
   },
@@ -20,18 +21,31 @@ export const programService = {
   async getSchedule() {
     const [schedule, programs] = await Promise.all([
       prisma.programSchedule.findMany({ orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }] }),
-      prisma.program.findMany({ where: { isActive: 1 } }),
+      prisma.program.findMany({
+        where: { isActive: 1 },
+        include: { _count: { select: { episodes: true } } },
+      }),
     ])
     return { schedule, programs: programs.map(toProgramDto) }
   },
 
   async getBySlug(slug: string) {
-    const p = await prisma.program.findUnique({ where: { slug } })
-    return p ? toProgramDto(p) : null
+    const p = await prisma.program.findUnique({
+      where: { slug },
+      include: {
+        _count: { select: { episodes: true } },
+        episodes: { orderBy: [{ sortOrder: 'asc' }, { publishedAt: 'desc' }] },
+      },
+    })
+    if (!p) return null
+    return { ...toProgramDto(p), episodes: p.episodes.map(toEpisodeDto) }
   },
 
   async getById(id: number) {
-    const p = await prisma.program.findUnique({ where: { id } })
+    const p = await prisma.program.findUnique({
+      where: { id },
+      include: { _count: { select: { episodes: true } } },
+    })
     return p ? toProgramDto(p) : null
   },
 
@@ -47,6 +61,7 @@ export const programService = {
     const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const p = await prisma.program.create({
       data: { title: data.title, slug, description: data.description ?? null, imageUrl: data.imageUrl ?? null, isActive: data.isActive !== false ? 1 : 0, sortOrder: data.sortOrder ?? 0 },
+      include: { _count: { select: { episodes: true } } },
     })
     return toProgramDto(p)
   },
@@ -61,6 +76,7 @@ export const programService = {
         ...(data.isActive !== undefined && { isActive: data.isActive ? 1 : 0 }),
         ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
       },
+      include: { _count: { select: { episodes: true } } },
     })
     return toProgramDto(p)
   },
@@ -70,20 +86,20 @@ export const programService = {
     return result.count > 0
   },
 
-  async createEpisode(programId: number, data: { title: string; slug?: string; description?: string | null; audioUrl?: string | null; duration?: number | null; publishedAt?: string | null; sortOrder?: number }) {
+  async createEpisode(programId: number, data: { title: string; slug?: string; description?: string | null; audioUrl?: string | null; youtubeUrl?: string | null; duration?: number | null; publishedAt?: string | null; sortOrder?: number }) {
     const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const e = await prisma.programEpisode.create({
-      data: { programId, title: data.title, slug, description: data.description ?? null, audioUrl: data.audioUrl ?? null, duration: data.duration ?? null, publishedAt: data.publishedAt ?? null, sortOrder: data.sortOrder ?? 0 },
+      data: { programId, title: data.title, slug, description: data.description ?? null, audioUrl: data.audioUrl ?? null, youtubeUrl: data.youtubeUrl ?? null, duration: data.duration ?? null, publishedAt: data.publishedAt ?? null, sortOrder: data.sortOrder ?? 0 },
     })
     return toEpisodeDto(e)
   },
 
-  async createEpisodesBulk(programId: number, episodes: { title: string; slug?: string; description?: string | null; audioUrl?: string | null; duration?: number | null; publishedAt?: string | null; sortOrder?: number }[]) {
+  async createEpisodesBulk(programId: number, episodes: { title: string; slug?: string; description?: string | null; audioUrl?: string | null; youtubeUrl?: string | null; duration?: number | null; publishedAt?: string | null; sortOrder?: number }[]) {
     await prisma.$transaction(
       episodes.map((ep) => {
         const slug = ep.slug || ep.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
         return prisma.programEpisode.create({
-          data: { programId, title: ep.title, slug, description: ep.description ?? null, audioUrl: ep.audioUrl ?? null, duration: ep.duration ?? null, publishedAt: ep.publishedAt ?? null, sortOrder: ep.sortOrder ?? 0 },
+          data: { programId, title: ep.title, slug, description: ep.description ?? null, audioUrl: ep.audioUrl ?? null, youtubeUrl: ep.youtubeUrl ?? null, duration: ep.duration ?? null, publishedAt: ep.publishedAt ?? null, sortOrder: ep.sortOrder ?? 0 },
         })
       })
     )
@@ -95,7 +111,7 @@ export const programService = {
     return e ? toEpisodeDto(e) : null
   },
 
-  async updateEpisode(episodeId: number, data: Partial<{ title: string; slug: string; description: string; audioUrl: string; duration: number; publishedAt: string; sortOrder: number }>) {
+  async updateEpisode(episodeId: number, data: Partial<{ title: string; slug: string; description: string; audioUrl: string; youtubeUrl: string; duration: number; publishedAt: string; sortOrder: number }>) {
     const e = await prisma.programEpisode.update({
       where: { id: episodeId },
       data: {
@@ -103,6 +119,7 @@ export const programService = {
         ...(data.slug !== undefined && { slug: data.slug }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.audioUrl !== undefined && { audioUrl: data.audioUrl }),
+        ...(data.youtubeUrl !== undefined && { youtubeUrl: data.youtubeUrl }),
         ...(data.duration !== undefined && { duration: data.duration }),
         ...(data.publishedAt !== undefined && { publishedAt: data.publishedAt }),
         ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),

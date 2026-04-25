@@ -320,6 +320,7 @@ model ProgramEpisode {
   slug        String
   description String?
   audioUrl    String?  @map("audio_url")
+  youtubeUrl  String?  @map("youtube_url")
   duration    Int?
   publishedAt String?  @map("published_at")
   sortOrder   Int      @default(0) @map("sort_order")
