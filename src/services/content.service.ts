@@ -113,7 +113,7 @@ async function enrichSongWithRelations(c: Parameters<typeof toSongDto>[0] & { cr
 }
 
 export const contentService = {
-  async listSongsPublic(filters: { genre?: string; mood?: string; search?: string; category?: string; page?: number; limit?: number }) {
+  async listSongsPublic(filters: { genre?: string; mood?: string; search?: string; category?: string; creatorId?: number; page?: number; limit?: number }) {
     const page = Number(filters.page) || 1
     const limit = Number(filters.limit) || DEFAULT_LIMIT
     const where: Prisma.ContentWhereInput = {
@@ -123,6 +123,7 @@ export const contentService = {
     if (filters.category) where.category = filters.category as any
     if (filters.genre) where.genres = { contains: filters.genre, mode: 'insensitive' }
     if (filters.mood) where.tags = { contains: filters.mood, mode: 'insensitive' }
+    if (filters.creatorId && Number.isFinite(filters.creatorId)) where.creatorId = filters.creatorId
     if (filters.search) where.OR = [{ title: { contains: filters.search, mode: 'insensitive' } }, { description: { contains: filters.search, mode: 'insensitive' } }]
     const [rows, total] = await Promise.all([
       prisma.content.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
